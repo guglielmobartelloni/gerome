@@ -2,7 +2,7 @@
 
 <img src="images/icon.png" width=300>
 
-# gErome Downloader GUI
+# gErome
 
 gErome is a desktop crossplatform app to download videos from Erome written in Go with Wails.
 
