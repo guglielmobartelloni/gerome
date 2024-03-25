@@ -21,7 +21,7 @@ func main() {
 
 	// Create application with options
 	err := wails.Run(&options.App{
-		Title:  "gerome-downloader-gui",
+		Title:  "gerome",
 		Width:  800,
 		Height: 600,
 		AssetServer: &assetserver.Options{
