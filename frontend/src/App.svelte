@@ -5,7 +5,7 @@
     let url;
 
     function download() {
-        DownloadVideos(url).then((result) => (console.log(result)));
+        DownloadVideos(url);
     }
 
     function setOutputDir() {

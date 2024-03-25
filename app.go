@@ -54,7 +54,7 @@ func getLinks(url string) map[string]struct{} {
 }
 
 // Greet returns a greeting for the given name
-func (a *App) DownloadVideos(url string) string {
+func (a *App) DownloadVideos(url string) {
 	message := ""
 	if url == "" {
 		message = "You must provide a url"
@@ -66,15 +66,18 @@ func (a *App) DownloadVideos(url string) string {
 	}
 
 	links := getLinks(url)
-    if len(links) == 0 {
+    nLinks := len(links)
+    if nLinks == 0 {
 		message = "There are no videos on the provided url"
 		runtime.MessageDialog(a.ctx, runtime.MessageDialogOptions{Message: message})
     }
+
+    message = fmt.Sprintf("Found %d videos!", nLinks)
+    runtime.MessageDialog(a.ctx, runtime.MessageDialogOptions{Message: message})
+
 	for link := range links {
 		fmt.Println(link) 
 	}
-    
-	return message
 }
 
 func (a *App) SetOutputDir() string {
