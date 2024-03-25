@@ -4,7 +4,7 @@
 
 # gErome Downloader GUI
 
-gErome is a desktop crossplatform app to download videos from Erome.
+gErome is a desktop crossplatform app to download videos from Erome written in Go with Wails.
 
 </div>
 
