@@ -1,11 +1,15 @@
 <script>
-    import { DownloadVideos } from "../wailsjs/go/main/App.js";
+    import { DownloadVideos, SetOutputDir } from "../wailsjs/go/main/App.js";
 
-    let resultText = "Enter the output dir";
-    let name;
+    let directory = "";
+    let url;
 
     function download() {
-        DownloadVideos(name).then((result) => (resultText = result));
+        DownloadVideos(url).then((result) => (console.log(result)));
+    }
+
+    function setOutputDir() {
+        SetOutputDir().then((result) => (directory = result));
     }
 </script>
 
@@ -18,26 +22,30 @@
                     type="text"
                     id="url"
                     name="Erome url"
+                    bind:value={url}
                     placeholder="https://erome.com/..."
                 />
             </label>
+            </div>
+            <div class="grid">
             <div class="grid">
                 <label for="Output Dir">
                     Output Dir
                     <input
                         autocomplete="off"
-                        bind:value={name}
+                        bind:value={directory}
                         placeholder="~/Downloads"
                         class="input"
                         id="name"
                         type="text"
                     />
                 </label>
-                <button on:click={download} class="secondary">Choose</button>
-
             </div>
         </div>
+        <div class="grid">
+        <button on:click={setOutputDir} class="secondary">Choose Output Dir</button>
         <button on:click={download}>Download</button>
+        </div>
     </section>
 </main>
 

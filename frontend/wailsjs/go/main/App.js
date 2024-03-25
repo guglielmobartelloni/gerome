@@ -5,3 +5,7 @@
 export function DownloadVideos(arg1) {
   return window['go']['main']['App']['DownloadVideos'](arg1);
 }
+
+export function SetOutputDir() {
+  return window['go']['main']['App']['SetOutputDir']();
+}
