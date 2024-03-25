@@ -21,17 +21,21 @@
                     placeholder="https://erome.com/..."
                 />
             </label>
-            <label for="Output Dir">
-                Output Dir
-                <input
-                    autocomplete="off"
-                    bind:value={name}
-                    placeholder="~/Downloads"
-                    class="input"
-                    id="name"
-                    type="text"
-                />
-            </label>
+            <div class="grid">
+                <label for="Output Dir">
+                    Output Dir
+                    <input
+                        autocomplete="off"
+                        bind:value={name}
+                        placeholder="~/Downloads"
+                        class="input"
+                        id="name"
+                        type="text"
+                    />
+                </label>
+                <button on:click={download} class="secondary">Choose</button>
+
+            </div>
         </div>
         <button on:click={download}>Download</button>
     </section>
@@ -39,6 +43,6 @@
 
 <style>
     #main-section {
-        width: 50%;
+        width: 80%;
     }
 </style>
