@@ -7,6 +7,7 @@ import (
 	"log"
 	"net/http"
 	"regexp"
+	"sync"
 
 	"github.com/wailsapp/wails/v2/pkg/runtime"
 )
@@ -53,31 +54,41 @@ func getLinks(url string) map[string]struct{} {
 	return links
 }
 
-// Greet returns a greeting for the given name
 func (a *App) DownloadVideos(url string) {
 	message := ""
 	if url == "" {
-		message = "You must provide a url"
-		runtime.MessageDialog(a.ctx, runtime.MessageDialogOptions{Message: message})
+		alert("You must provide a url", a)
 	}
 	if a.outputDir == "" {
-		message = "You must set an output dir"
-		runtime.MessageDialog(a.ctx, runtime.MessageDialogOptions{Message: message})
+		alert("You must set an output dir", a)
 	}
 
 	links := getLinks(url)
-    nLinks := len(links)
-    if nLinks == 0 {
-		message = "There are no videos on the provided url"
-		runtime.MessageDialog(a.ctx, runtime.MessageDialogOptions{Message: message})
-    }
-
-    message = fmt.Sprintf("Found %d videos!", nLinks)
-    runtime.MessageDialog(a.ctx, runtime.MessageDialogOptions{Message: message})
-
-	for link := range links {
-		fmt.Println(link) 
+	nLinks := len(links)
+	if nLinks == 0 {
+		alert("There are no videos on the provided url", a)
 	}
+
+	alert(fmt.Sprintf("Found %d videos!", nLinks), a)
+
+	var wg sync.WaitGroup
+	for link := range links {
+		wg.Add(1)
+
+		go func(link string) {
+			defer wg.Done()
+			fmt.Println(fmt.Sprintf("Processing %s", link))
+
+		}(link)
+	}
+	wg.Wait()
+	message = "Finished downloading videos!"
+	runtime.MessageDialog(a.ctx, runtime.MessageDialogOptions{Message: message})
+
+}
+
+func alert(message string, a *App) {
+	runtime.MessageDialog(a.ctx, runtime.MessageDialogOptions{Message: message})
 }
 
 func (a *App) SetOutputDir() string {
