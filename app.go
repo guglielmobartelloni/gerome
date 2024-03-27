@@ -7,8 +7,9 @@ import (
 	"log"
 	"net/http"
 	"regexp"
-	"sync"
+	"time"
 
+	"github.com/panjf2000/ants"
 	"github.com/wailsapp/wails/v2/pkg/runtime"
 )
 
@@ -71,17 +72,24 @@ func (a *App) DownloadVideos(url string) {
 
 	alert(fmt.Sprintf("Found %d videos!", nLinks), a)
 
-	var wg sync.WaitGroup
-	for link := range links {
-		wg.Add(1)
+	p, err := ants.NewPoolWithFunc(10, func(value interface{}) {
+        link := value.(string)
+		fmt.Printf("Processing task #%s\n", link)
+		time.Sleep(time.Second)
+	})
 
-		go func(link string) {
-			defer wg.Done()
-			fmt.Println(fmt.Sprintf("Processing %s", link))
-
-		}(link)
+	if err != nil {
+		fmt.Println("Failed to initiate goroutine pool")
+		panic(err)
 	}
-	wg.Wait()
+
+	for link := range links {
+		err := p.Invoke(link)
+		if err != nil {
+			fmt.Println("Failed to invoke data")
+		}
+	}
+
 	message = "Finished downloading videos!"
 	runtime.MessageDialog(a.ctx, runtime.MessageDialogOptions{Message: message})
 
