@@ -1,22 +1,28 @@
 package main
 
 import (
+	"changeme/internal"
 	"context"
 	"fmt"
+	"github.com/panjf2000/ants"
+	"github.com/wailsapp/wails/v2/pkg/runtime"
 	"io"
 	"log"
 	"net/http"
+	"path/filepath"
 	"regexp"
-	"time"
-
-	"github.com/panjf2000/ants"
-	"github.com/wailsapp/wails/v2/pkg/runtime"
+	"strings"
 )
 
 // App struct
 type App struct {
 	ctx       context.Context
 	outputDir string
+}
+
+type Worker struct {
+	Application *App
+	Link        string
 }
 
 // NewApp creates a new App application struct
@@ -72,11 +78,7 @@ func (a *App) DownloadVideos(url string) {
 
 	alert(fmt.Sprintf("Found %d videos!", nLinks), a)
 
-	p, err := ants.NewPoolWithFunc(10, func(value interface{}) {
-        link := value.(string)
-		fmt.Printf("Processing task #%s\n", link)
-		time.Sleep(time.Second)
-	})
+	p, err := ants.NewPoolWithFunc(2, downloadWorker)
 
 	if err != nil {
 		fmt.Println("Failed to initiate goroutine pool")
@@ -84,7 +86,7 @@ func (a *App) DownloadVideos(url string) {
 	}
 
 	for link := range links {
-		err := p.Invoke(link)
+		err := p.Invoke(Worker{Application: a, Link: link})
 		if err != nil {
 			fmt.Println("Failed to invoke data")
 		}
@@ -92,6 +94,25 @@ func (a *App) DownloadVideos(url string) {
 
 	message = "Finished downloading videos!"
 	runtime.MessageDialog(a.ctx, runtime.MessageDialogOptions{Message: message})
+
+}
+
+func downloadWorker(value interface{}) {
+	data := value.(Worker)
+	link := data.Link
+	linkSplit := strings.Split(link, "/")
+	filePath := filepath.Join(data.Application.outputDir, linkSplit[len(linkSplit)-1])
+	fmt.Println(filePath)
+	download := &internal.Download{
+		URL:      link,
+		FilePath: filePath,
+	}
+
+	err := internal.DownloadWithResume(download)
+	if err != nil {
+		fmt.Println("Error downloading:", err)
+		downloadWorker(value)
+	}
 
 }
 

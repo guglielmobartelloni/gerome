@@ -38,13 +38,14 @@
                         class="input"
                         id="name"
                         type="text"
+                        disabled
                     />
                 </label>
             </div>
         </div>
         <div class="grid">
         <button on:click={setOutputDir} class="secondary">Choose Output Dir</button>
-        <button on:click={download}>Download</button>
+        <button on:click={download} >Download</button>
         </div>
     </section>
 </main>
